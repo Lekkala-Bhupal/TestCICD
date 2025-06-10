@@ -1,34 +1,25 @@
 pipeline {
-  agent any
+    agent any
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
 
-  environment {
-    JMETER_HOME = "/opt/apache-jmeter-5.5"
-  }
+        stage('Run JMeter Test') {
+            steps {
+                sh '''
+                export PATH=$PATH:/path/to/apache-jmeter/bin
+                jmeter -n -t CICDSCRIPTS/Maple.jmx -l results.jtl -e -o results
+                '''
+            }
+        }
 
-  stages {
-    stage('Checkout') {
-      steps {
-        git branch: 'main', url: 'https://github.com/your-org/your-repo.git'
-      }
+        stage('Archive Results') {
+            steps {
+                archiveArtifacts artifacts: 'results/**/*.*', fingerprint: true
+            }
+        }
     }
-
-    stage('Run JMeter Test') {
-      steps {
-        sh """
-          mkdir -p results
-          ${JMETER_HOME}/bin/jmeter -n -t test1.jmx -l results/result.jtl -e -o results/report
-        """
-      }
-    }
-
-    stage('Publish Report') {
-      steps {
-        publishHTML(target: [
-          reportDir: 'results/report',
-          reportFiles: 'index.html',
-          reportName: 'JMeter Report'
-        ])
-      }
-    }
-  }
 }
