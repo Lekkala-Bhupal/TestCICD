@@ -1,0 +1,34 @@
+pipeline {
+  agent any
+
+  environment {
+    JMETER_HOME = "/opt/apache-jmeter-5.5"
+  }
+
+  stages {
+    stage('Checkout') {
+      steps {
+        git branch: 'main', url: 'https://github.com/your-org/your-repo.git'
+      }
+    }
+
+    stage('Run JMeter Test') {
+      steps {
+        sh """
+          mkdir -p results
+          ${JMETER_HOME}/bin/jmeter -n -t test1.jmx -l results/result.jtl -e -o results/report
+        """
+      }
+    }
+
+    stage('Publish Report') {
+      steps {
+        publishHTML(target: [
+          reportDir: 'results/report',
+          reportFiles: 'index.html',
+          reportName: 'JMeter Report'
+        ])
+      }
+    }
+  }
+}
