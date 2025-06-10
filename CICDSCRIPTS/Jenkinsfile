@@ -9,10 +9,7 @@ pipeline {
 
         stage('Run JMeter Test') {
             steps {
-                sh '''
-                export PATH=$PATH:/path/to/apache-jmeter/bin
-                jmeter -n -t CICDSCRIPTS/Maple.jmx -l results.jtl -e -o results
-                '''
+                sh '/opt/apache-jmeter-5.5/bin/jmeter -n -t CICDSCRIPTS/Maple.jmx -l results.jtl -e -o results'
             }
         }
 
