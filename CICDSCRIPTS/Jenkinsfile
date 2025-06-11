@@ -12,7 +12,7 @@ pipeline {
             steps {
                 // Navigate to workspace/CICDSCRIPTS and run JMeter
                 dir('CICDSCRIPTS') {
-                    bat 'jmeter -n -t Maple.jmx -l results.jtl -e -o results'
+                    bat 'jmeter -n -t Maple.jmx -l results1.jtl -e -o results1'
                 }
             }
         }
