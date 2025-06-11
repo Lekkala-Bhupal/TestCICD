@@ -22,5 +22,17 @@ pipeline {
                 archiveArtifacts artifacts: 'CICDSCRIPTS/results/**/*.*', fingerprint: true
             }
         }
+
+        stage('Send Email') {
+            steps {
+                emailext(
+                    to: 'lbhupal@academian.com',
+                    subject: "JMeter Test Results - Staging #${env.BUILD_NUMBER}",
+                    body: "Test completed. View HTML report attached.",
+                    attachLog: true,
+                    attachmentsPattern: 'tests/results/**/*.html'
+                )
+            }
+        }
     }
 }
