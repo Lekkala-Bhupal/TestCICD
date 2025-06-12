@@ -33,7 +33,7 @@ pipeline {
                     <p>Regards,<br/>Jenkins</p>
                     """,
                     mimeType: 'text/html',
-                    to: 'bhupal155@gmail.com',
+                    to: 'lbhupal@academian.com',
                     attachLog: true,
                     attachmentsPattern: 'CICDSCRIPTS/results1/**/*.html'
                 )
