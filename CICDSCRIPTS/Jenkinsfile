@@ -10,7 +10,6 @@ pipeline {
 
         stage('Run JMeter Test') {
             steps {
-                // Navigate to workspace/CICDSCRIPTS and run JMeter
                 dir('CICDSCRIPTS') {
                     bat 'jmeter -n -t Maple.jmx -l results1.jtl -e -o results1'
                 }
@@ -19,18 +18,24 @@ pipeline {
 
         stage('Archive Results') {
             steps {
-                archiveArtifacts artifacts: 'CICDSCRIPTS/results/**/*.*', fingerprint: true
+                archiveArtifacts artifacts: 'CICDSCRIPTS/results1/**/*.*', fingerprint: true
             }
         }
 
         stage('Send Email') {
             steps {
                 emailext(
+                    subject: "JMeter Test Results - Build #${env.BUILD_NUMBER}",
+                    body: """
+                    <p>Hi Team,</p>
+                    <p>The JMeter test has completed for build <b>#${env.BUILD_NUMBER}</b>.</p>
+                    <p>View the test results in the attached HTML report.</p>
+                    <p>Regards,<br/>Jenkins</p>
+                    """,
+                    mimeType: 'text/html',
                     to: 'lbhupal@academian.com',
-                    subject: "JMeter Test Results - Staging #${env.BUILD_NUMBER}",
-                    body: "Test completed. View HTML report attached.",
                     attachLog: true,
-                    attachmentsPattern: 'tests/results/**/*.html'
+                    attachmentsPattern: 'CICDSCRIPTS/results1/**/*.html'
                 )
             }
         }
