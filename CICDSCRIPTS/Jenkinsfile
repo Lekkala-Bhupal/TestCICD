@@ -24,18 +24,10 @@ pipeline {
 
         stage('Send Email') {
             steps {
-                emailext(
-                    subject: "JMeter Test Results - Build #${env.BUILD_NUMBER}",
-                    body: """
-                    <p>Hi Team,</p>
-                    <p>The JMeter test has completed for build <b>#${env.BUILD_NUMBER}</b>.</p>
-                    <p>View the test results in the attached HTML report.</p>
-                    <p>Regards,<br/>Jenkins</p>
-                    """,
-                    mimeType: 'text/html',
-                    to: 'lbhupal@academian.com',
-                    attachLog: true,
-                    attachmentsPattern: 'CICDSCRIPTS/results1/**/*.html'
+                emailext (
+                    subject: "Test Email",
+                    body: "This is a test email from Jenkins",
+                    to: "lbhupal@academian.com"
                 )
             }
         }
