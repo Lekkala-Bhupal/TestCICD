@@ -2,43 +2,47 @@ pipeline {
     agent any
 
     environment {
-        JMETER_HOME = 'C:\\apache-jmeter-5.5\\bin'  // <-- Set your actual JMeter path if needed
+        JMETER_HOME = 'C:\\apache-jmeter-5.5\\bin'  // Adjust to your JMeter location
     }
 
     stages {
         stage('Checkout') {
             steps {
-                echo "Checking out source..."
                 checkout scm
             }
         }
 
         stage('Run JMeter Test') {
             steps {
-                echo "Running JMeter test..."
                 dir('CICDSCRIPTS') {
                     bat "${JMETER_HOME}\\jmeter -n -t Maple.jmx -l results1.jtl -e -o results1"
                 }
             }
         }
 
+        stage('Verify Report Exists') {
+            steps {
+                dir('CICDSCRIPTS/results1') {
+                    bat 'dir' // Check if index.html is present
+                }
+            }
+        }
+
         stage('Archive Results') {
             steps {
-                echo "Archiving artifacts..."
                 archiveArtifacts artifacts: 'CICDSCRIPTS/results1/**/*.*', fingerprint: true
             }
         }
 
         stage('Send Email') {
             steps {
-                echo "Sending email notification..."
                 emailext (
                     subject: "✅ JMeter Test Report - Build #${env.BUILD_NUMBER}",
                     body: """
-                    <p>Hello Team,</p>
-                    <p>The JMeter test has completed for build <b>#${env.BUILD_NUMBER}</b>.</p>
-                    <p><a href="${env.BUILD_URL}artifact/CICDSCRIPTS/results1/index.html">Click here to view the report</a>.</p>
-                    <p>Regards,<br>Jenkins</p>
+                        <p>Hello Team,</p>
+                        <p>The JMeter test has completed for build <b>#${env.BUILD_NUMBER}</b>.</p>
+                        <p><a href="${env.BUILD_URL}artifact/CICDSCRIPTS/results1/index.html">Click here to view the HTML report</a>.</p>
+                        <p>Regards,<br>Jenkins</p>
                     """,
                     mimeType: 'text/html',
                     to: "lbnaidu1995@gmail.com"
@@ -51,7 +55,7 @@ pipeline {
         failure {
             emailext (
                 subject: "❌ Build Failed - #${env.BUILD_NUMBER}",
-                body: "The Jenkins job failed. Please check the console output: ${env.BUILD_URL}",
+                body: "The Jenkins job failed. Please check: ${env.BUILD_URL}",
                 to: "lbnaidu1995@gmail.com"
             )
         }
