@@ -40,8 +40,7 @@ pipeline {
                     from: 'lbnaidu1995@gmail.com',
                     replyTo: 'lbnaidu1995@gmail.com',
                     attachmentsPattern: 'CICDSCRIPTS/results/index.html',
-                    attachLog: true,
-                    credentialsId: '0295572c-e7b5-49b7-a9da-cd797586d9cc'
+                    attachLog: true
                 )
             }
         }
