@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        JMETER_HOME = 'C:\\apache-jmeter\\bin' // Update this if needed
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -11,7 +15,7 @@ pipeline {
         stage('Run JMeter Test') {
             steps {
                 dir('CICDSCRIPTS') {
-                    bat 'jmeter -n -t Maple.jmx -l results.jtl -e -o results'
+                    bat "${env.JMETER_HOME}\\jmeter -n -t Maple.jmx -l results.jtl -e -o results"
                 }
             }
         }
