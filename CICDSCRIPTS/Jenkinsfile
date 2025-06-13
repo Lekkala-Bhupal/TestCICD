@@ -1,10 +1,6 @@
 pipeline {
     agent any
 
-    environment {
-        JMETER_HOME = 'C:\\apache-jmeter\\bin' // Update this if needed
-    }
-
     stages {
         stage('Checkout') {
             steps {
@@ -15,7 +11,7 @@ pipeline {
         stage('Run JMeter Test') {
             steps {
                 dir('CICDSCRIPTS') {
-                    bat "${env.JMETER_HOME}\\jmeter -n -t Maple.jmx -l results.jtl -e -o results"
+                    bat 'jmeter -n -t Maple.jmx -l results.jtl -e -o results'
                 }
             }
         }
@@ -28,20 +24,22 @@ pipeline {
 
         stage('Send Email') {
             steps {
-                emailext(
-                    subject: "JMeter Test Report - Build #${env.BUILD_NUMBER}",
-                    body: """
-                        <p>Hello,</p>
-                        <p>The JMeter test completed successfully for <b>Build #${env.BUILD_NUMBER}</b>.</p>
-                        <p><a href="${env.BUILD_URL}artifact/CICDSCRIPTS/results/index.html">View HTML Report</a></p>
-                    """,
-                    mimeType: 'text/html',
-                    to: 'lbnaidu1995@gmail.com',
-                    from: 'lbnaidu1995@gmail.com',
-                    replyTo: 'lbnaidu1995@gmail.com',
-                    attachmentsPattern: 'CICDSCRIPTS/results/index.html',
-                    attachLog: true
-                )
+                script {
+                    emailext(
+                        subject: "JMeter Test Report - Build #${env.BUILD_NUMBER}",
+                        body: """
+                            <p>Hello,</p>
+                            <p>The JMeter test completed successfully for <b>Build #${env.BUILD_NUMBER}</b>.</p>
+                            <p><a href="${env.BUILD_URL}artifact/CICDSCRIPTS/results/index.html">View HTML Report</a></p>
+                        """,
+                        mimeType: 'text/html',
+                        to: 'lbnaidu1995@gmail.com',
+                        from: 'lbnaidu1995@gmail.com',
+                        replyTo: 'lbnaidu1995@gmail.com',
+                        attachmentsPattern: 'CICDSCRIPTS/results/index.html',
+                        attachLog: true
+                    )
+                }
             }
         }
     }
