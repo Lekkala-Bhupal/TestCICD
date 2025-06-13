@@ -39,7 +39,7 @@ pipeline {
                 **replyTo: 'bhupal155@gmail.com',
                 from: 'lbnaidu1995@gmail.com',
                 recipientProviders: [[$class: 'DevelopersRecipientProvider']],
-                credentialsId: 'your-gmail-credentials-id' // <-- This is key**
+                credentialsId: 'fbf04d54-3bf5-4f28-af82-1d3bccd59035' // <-- This is key**
             )
         }
     }
