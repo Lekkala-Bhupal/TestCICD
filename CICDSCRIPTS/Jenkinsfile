@@ -25,21 +25,25 @@ pipeline {
         stage('Send Email') {
     steps {
         script {
-            emailext (
+            emailext(
                 subject: "JMeter Report - Build #${env.BUILD_NUMBER}",
                 body: """
                     <p>Hello,</p>
                     <p>The JMeter test has completed for build #${env.BUILD_NUMBER}.</p>
                     <p><a href="${env.BUILD_URL}artifact/CICDSCRIPTS/results/index.html">Click here to view the report</a></p>
-                    <p>Regards,<br/>Jenkins</p>
                 """,
                 mimeType: 'text/html',
                 to: 'lbnaidu1995@gmail.com',
                 attachLog: true,
-                attachmentsPattern: 'CICDSCRIPTS/results/index.html'
+                attachmentsPattern: 'CICDSCRIPTS/results/index.html',
+                **replyTo: 'bhupal155@gmail.com',
+                from: 'lbnaidu1995@gmail.com',
+                recipientProviders: [[$class: 'DevelopersRecipientProvider']],
+                credentialsId: 'your-gmail-credentials-id' // <-- This is key**
             )
-                }
-            }
         }
     }
 }
+
+                } }
+        
