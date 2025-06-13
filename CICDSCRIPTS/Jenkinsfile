@@ -1,42 +1,13 @@
 pipeline {
     agent any
-
     stages {
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
-
-        stage('Run JMeter Test') {
-            steps {
-                dir('CICDSCRIPTS') {
-                    bat 'jmeter -n -t Maple.jmx -l results1.jtl -e -o results1'
-                }
-            }
-        }
-
-        stage('Archive Results') {
-            steps {
-                archiveArtifacts artifacts: 'CICDSCRIPTS/results1/**/*.*', fingerprint: true
-            }
-        }
-
-        stage('Send Email') {
+        stage('Test Email') {
             steps {
                 script {
                     emailext (
-                        subject: "JMeter Report - Build #${env.BUILD_NUMBER}",
-                        body: """
-                            <p>Hello,</p>
-                            <p>The JMeter test has completed for build #${env.BUILD_NUMBER}.</p>
-                            <p><a href="${env.BUILD_URL}artifact/CICDSCRIPTS/results1/index.html">Click here to view the report</a></p>
-                            <p>Regards,<br/>Jenkins</p>
-                        """,
-                        mimeType: 'text/html',
-                        to: 'lbnaidu1995@gmail.com',
-                        attachLog: true,
-                        attachmentsPattern: 'CICDSCRIPTS/results1/index.html'
+                        subject: "Test Email from Jenkins",
+                        body: "This is a test email sent from a Jenkins pipeline.",
+                        to: "lbnaidu1995@gmail.com"
                     )
                 }
             }
