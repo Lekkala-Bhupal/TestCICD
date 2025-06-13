@@ -19,30 +19,56 @@ pipeline {
         stage('Archive Results') {
             steps {
                 archiveArtifacts artifacts: 'CICDSCRIPTS/results/**/*.*', fingerprint: true
+                junit 'CICDSCRIPTS/results.jtl' // Optional: If you want to process JTL as JUnit results
             }
         }
+    }
 
-        stage('Send Email') {
-            steps {
-                script {
-                    echo "📧 Sending email..."
-                    emailext(
-                        subject: "JMeter Test Report - Build #${env.BUILD_NUMBER}",
-                        body: """
-                            <p>Hello,</p>
-                            <p>The JMeter test completed for <b>Build #${env.BUILD_NUMBER}</b>.</p>
-                            <p><a href="${env.BUILD_URL}artifact/CICDSCRIPTS/results/index.html">View JMeter HTML Report</a></p>
-                        """,
-                        mimeType: 'text/html',
-                        to: 'lbnaidu1995@gmail.com',
-                        from: 'lbnaidu1995@gmail.com',
-                        replyTo: 'lbnaidu1995@gmail.com',
-                        attachmentsPattern: 'CICDSCRIPTS/results/index.html',
-                        attachLog: true,
-                        compressLog: true
-                    )
-                }
-            }
+    post {
+        always {
+            emailext(
+                subject: "JMeter Test Report - ${currentBuild.currentResult} - Build #${env.BUILD_NUMBER}",
+                body: """
+                    <html>
+                    <head>
+                        <style>
+                            body { font-family: Arial, sans-serif; line-height: 1.6; }
+                            .success { color: #4CAF50; }
+                            .failure { color: #F44336; }
+                            .unstable { color: #FFC107; }
+                        </style>
+                    </head>
+                    <body>
+                        <p>Hello,</p>
+                        <p>The JMeter test completed with status: 
+                            <span class="${currentBuild.currentResult.toLowerCase()}">
+                                <b>${currentBuild.currentResult}</b>
+                            </span>
+                        </p>
+                        
+                        <h3>Build Details</h3>
+                        <ul>
+                            <li><b>Build Number:</b> #${env.BUILD_NUMBER}</li>
+                            <li><b>Project:</b> ${env.JOB_NAME}</li>
+                            <li><b>Duration:</b> ${currentBuild.durationString.replace(' and counting', '')}</li>
+                            <li><b>Console Log:</b> <a href="${env.BUILD_URL}console">View Full Log</a></li>
+                        </ul>
+                        
+                        <h3>Test Report</h3>
+                        <p><a href="${env.BUILD_URL}artifact/CICDSCRIPTS/results/index.html">View JMeter HTML Report</a></p>
+                        
+                        <p>Build URL: <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>
+                    </body>
+                    </html>
+                """,
+                mimeType: 'text/html',
+                to: 'lbnaidu1995@gmail.com',
+                from: 'lbnaidu1995@gmail.com',
+                replyTo: 'lbnaidu1995@gmail.com',
+                attachmentsPattern: 'CICDSCRIPTS/results/**/*.html, CICDSCRIPTS/results.jtl',
+                attachLog: true,
+                compressLog: true
+            )
         }
     }
 }
