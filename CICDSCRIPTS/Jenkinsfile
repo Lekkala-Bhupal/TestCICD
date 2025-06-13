@@ -38,7 +38,8 @@ pipeline {
                         from: 'lbnaidu1995@gmail.com',
                         replyTo: 'lbnaidu1995@gmail.com',
                         attachmentsPattern: 'CICDSCRIPTS/results/index.html',
-                        attachLog: true
+                        attachLog: true,
+                        compressLog: true
                     )
                 }
             }
