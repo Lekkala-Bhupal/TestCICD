@@ -25,12 +25,13 @@ pipeline {
         stage('Send Email') {
             steps {
                 script {
+                    echo "📧 Sending email..."
                     emailext(
                         subject: "JMeter Test Report - Build #${env.BUILD_NUMBER}",
                         body: """
                             <p>Hello,</p>
-                            <p>The JMeter test completed successfully for <b>Build #${env.BUILD_NUMBER}</b>.</p>
-                            <p><a href="${env.BUILD_URL}artifact/CICDSCRIPTS/results/index.html">View HTML Report</a></p>
+                            <p>The JMeter test completed for <b>Build #${env.BUILD_NUMBER}</b>.</p>
+                            <p><a href="${env.BUILD_URL}artifact/CICDSCRIPTS/results/index.html">View JMeter HTML Report</a></p>
                         """,
                         mimeType: 'text/html',
                         to: 'lbnaidu1995@gmail.com',
