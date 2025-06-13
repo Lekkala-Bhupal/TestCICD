@@ -11,39 +11,35 @@ pipeline {
         stage('Run JMeter Test') {
             steps {
                 dir('CICDSCRIPTS') {
-                    bat 'jmeter -n -t Maple.jmx -l results1.jtl -e -o results1'
+                    bat 'jmeter -n -t Maple.jmx -l results.jtl -e -o results'
                 }
             }
         }
 
         stage('Archive Results') {
             steps {
-                archiveArtifacts artifacts: 'CICDSCRIPTS/results1/**/*.*', fingerprint: true
+                archiveArtifacts artifacts: 'CICDSCRIPTS/results/**/*.*', fingerprint: true
             }
         }
 
         stage('Send Email') {
-    steps {
-        script {
-            emailext(
-                subject: "JMeter Report - Build #${env.BUILD_NUMBER}",
-                body: """
-                    <p>Hello,</p>
-                    <p>The JMeter test has completed for build #${env.BUILD_NUMBER}.</p>
-                    <p><a href="${env.BUILD_URL}artifact/CICDSCRIPTS/results/index.html">Click here to view the report</a></p>
-                """,
-                mimeType: 'text/html',
-                to: 'lbnaidu1995@gmail.com',
-                attachLog: true,
-                attachmentsPattern: 'CICDSCRIPTS/results/index.html',
-                **replyTo: 'bhupal155@gmail.com',
-                from: 'lbnaidu1995@gmail.com',
-                recipientProviders: [[$class: 'DevelopersRecipientProvider']],
-                credentialsId: 'fbf04d54-3bf5-4f28-af82-1d3bccd59035' // <-- This is key**
-            )
+            steps {
+                emailext(
+                    subject: "JMeter Test Report - Build #${env.BUILD_NUMBER}",
+                    body: """
+                        <p>Hello,</p>
+                        <p>The JMeter test completed successfully for <b>Build #${env.BUILD_NUMBER}</b>.</p>
+                        <p><a href="${env.BUILD_URL}artifact/CICDSCRIPTS/results/index.html">View HTML Report</a></p>
+                    """,
+                    mimeType: 'text/html',
+                    to: 'lbnaidu1995@gmail.com',
+                    from: 'lbnaidu1995@gmail.com',
+                    replyTo: 'lbnaidu1995@gmail.com',
+                    attachmentsPattern: 'CICDSCRIPTS/results/index.html',
+                    attachLog: true,
+                    credentialsId: 'fbf04d54-3bf5-4f28-af82-1d3bccd59035'
+                )
+            }
         }
     }
 }
-
-                } }
-        
