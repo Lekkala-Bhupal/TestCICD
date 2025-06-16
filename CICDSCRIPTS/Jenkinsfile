@@ -19,7 +19,7 @@ pipeline {
         stage('Archive Results') {
             steps {
                 archiveArtifacts artifacts: 'CICDSCRIPTS/results/**/*.*', fingerprint: true
-                junit 'CICDSCRIPTS/results.jtl' // Optional: If you want to process JTL as JUnit results
+                junit allowEmptyResults: true, testResults: 'CICDSCRIPTS/results.jtl'
             }
         }
     }
@@ -33,15 +33,15 @@ pipeline {
                     <head>
                         <style>
                             body { font-family: Arial, sans-serif; line-height: 1.6; }
-                            .success { color: #4CAF50; }
-                            .failure { color: #F44336; }
-                            .unstable { color: #FFC107; }
+                            .SUCCESS { color: #4CAF50; }
+                            .FAILURE { color: #F44336; }
+                            .UNSTABLE { color: #FFC107; }
                         </style>
                     </head>
                     <body>
                         <p>Hello,</p>
                         <p>The JMeter test completed with status: 
-                            <span class="${currentBuild.currentResult.toLowerCase()}">
+                            <span class="${currentBuild.currentResult}">
                                 <b>${currentBuild.currentResult}</b>
                             </span>
                         </p>
@@ -63,9 +63,7 @@ pipeline {
                 """,
                 mimeType: 'text/html',
                 to: 'lbnaidu1995@gmail.com',
-                from: 'lbnaidu1995@gmail.com',
-                replyTo: 'lbnaidu1995@gmail.com',
-                attachmentsPattern: 'CICDSCRIPTS/results/**/*.html, CICDSCRIPTS/results.jtl',
+                attachmentsPattern: 'CICDSCRIPTS/results/**/*.html,CICDSCRIPTS/results.jtl',
                 attachLog: true,
                 compressLog: true
             )
