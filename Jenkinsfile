@@ -2,15 +2,8 @@ pipeline {
     agent any
 
     stages {
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
-
         stage('Run JMeter Test') {
             steps {
-                // Navigate to workspace/CICDSCRIPTS and run JMeter
                 dir('CICDSCRIPTS') {
                     bat 'jmeter -n -t Maple.jmx -l results.jtl -e -o results'
                 }
@@ -19,8 +12,22 @@ pipeline {
 
         stage('Archive Results') {
             steps {
-                archiveArtifacts artifacts: 'CICDSCRIPTS/results/**/*.*', fingerprint: true
+                archiveArtifacts artifacts: '**/results.jtl', fingerprint: true
             }
+        }
+    }
+
+    post {
+        always {
+            emailext (
+                subject: "Jenkins CI - Build #${env.BUILD_NUMBER} - ${currentBuild.currentResult}",
+                body: """\
+                    <p>Build Result: ${currentBuild.currentResult}</p>
+                    <p>Check <a href="${env.BUILD_URL}">Jenkins Console Output</a></p>
+                """,
+                mimeType: 'text/html',
+                to: "lbnaidu1995@gmail.com"
+            )
         }
     }
 }
