@@ -26,7 +26,7 @@ pipeline {
                     <p>Check <a href="${env.BUILD_URL}">Jenkins Console Output</a></p>
                 """,
                 mimeType: 'text/html',
-                to: "lbhupal@academian.com"
+                to: "lbnaidu1995@gmail.com"
             )
         }
     }
