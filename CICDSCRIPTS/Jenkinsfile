@@ -15,16 +15,7 @@ pipeline {
                 }
             }
         }
-
-        stage('Archive Results') {
-            steps {
-                archiveArtifacts artifacts: 'CICDSCRIPTS/results/**/*.*', fingerprint: true
-                junit allowEmptyResults: true, testResults: 'CICDSCRIPTS/results.jtl'
-            }
-        }
-    }
-
-    post {
+ post {
         always {
             emailext(
                 subject: "JMeter Test Report - ${currentBuild.currentResult} - Build #${env.BUILD_NUMBER}",
@@ -70,3 +61,13 @@ pipeline {
         }
     }
 }
+
+        stage('Archive Results') {
+            steps {
+                archiveArtifacts artifacts: 'CICDSCRIPTS/results/**/*.*', fingerprint: true
+                junit allowEmptyResults: true, testResults: 'CICDSCRIPTS/results.jtl'
+            }
+        }
+    }
+
+   
