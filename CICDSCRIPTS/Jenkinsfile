@@ -2,72 +2,27 @@ pipeline {
     agent any
 
     stages {
-        stage('Checkout') {
+        stage('Build') {
             steps {
-                checkout scm
+                echo 'Building the project...'
             }
         }
+    }
 
-        stage('Run JMeter Test') {
-            steps {
-                dir('CICDSCRIPTS') {
-                    bat 'jmeter -n -t Maple.jmx -l results.jtl -e -o results'
-                }
-            }
-        }
- post {
-        always {
+    post {
+        success {
             emailext(
-                subject: "JMeter Test Report - ${currentBuild.currentResult} - Build #${env.BUILD_NUMBER}",
-                body: """
-                    <html>
-                    <head>
-                        <style>
-                            body { font-family: Arial, sans-serif; line-height: 1.6; }
-                            .SUCCESS { color: #4CAF50; }
-                            .FAILURE { color: #F44336; }
-                            .UNSTABLE { color: #FFC107; }
-                        </style>
-                    </head>
-                    <body>
-                        <p>Hello,</p>
-                        <p>The JMeter test completed with status: 
-                            <span class="${currentBuild.currentResult}">
-                                <b>${currentBuild.currentResult}</b>
-                            </span>
-                        </p>
-                        
-                        <h3>Build Details</h3>
-                        <ul>
-                            <li><b>Build Number:</b> #${env.BUILD_NUMBER}</li>
-                            <li><b>Project:</b> ${env.JOB_NAME}</li>
-                            <li><b>Duration:</b> ${currentBuild.durationString.replace(' and counting', '')}</li>
-                            <li><b>Console Log:</b> <a href="${env.BUILD_URL}console">View Full Log</a></li>
-                        </ul>
-                        
-                        <h3>Test Report</h3>
-                        <p><a href="${env.BUILD_URL}artifact/CICDSCRIPTS/results/index.html">View JMeter HTML Report</a></p>
-                        
-                        <p>Build URL: <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>
-                    </body>
-                    </html>
-                """,
-                mimeType: 'text/html',
-                to: 'lbnaidu1995@gmail.com',
-                attachmentsPattern: 'CICDSCRIPTS/results/**/*.html,CICDSCRIPTS/results.jtl',
-                attachLog: true,
-                compressLog: true
+                subject: "✅ Build Success: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: "Hi Team,\n\nThe build for job '${env.JOB_NAME}' completed *successfully*.\n\nRegards,\nJenkins",
+                to: 'lbnaidu1995@gmail.com'
+            )
+        }
+        failure {
+            emailext(
+                subject: "❌ Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: "Hi Team,\n\nThe build for job '${env.JOB_NAME}' *failed*.\nPlease check Jenkins for details.\n\nRegards,\nJenkins",
+                to: 'lbnaidu1995@gmail.com'
             )
         }
     }
 }
-
-        stage('Archive Results') {
-            steps {
-                archiveArtifacts artifacts: 'CICDSCRIPTS/results/**/*.*', fingerprint: true
-                junit allowEmptyResults: true, testResults: 'CICDSCRIPTS/results.jtl'
-            }
-        }
-    }
-
-   
