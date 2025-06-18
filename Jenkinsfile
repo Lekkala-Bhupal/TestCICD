@@ -5,7 +5,7 @@ pipeline {
         stage('Run JMeter Test') {
             steps {
                 dir('CICDSCRIPTS') {
-                    sh './jmeter.sh -n -t Maple.jmx -l result.jtl -e -o Report.html'
+                    sh 'jmeter -n -t Maple.jmx -l result.jtl -e -o Report.html'
 
                 }
             }
