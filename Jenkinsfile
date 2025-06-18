@@ -14,7 +14,7 @@ pipeline {
 
         stage('Archive Results') {
             steps {
-                archiveArtifacts artifacts: '**/results.jtl', fingerprint: true
+                archiveArtifacts artifacts: '**/result.jtl', fingerprint: true
             }
         }
     }
