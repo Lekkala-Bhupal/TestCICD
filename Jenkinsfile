@@ -5,7 +5,8 @@ pipeline {
         stage('Run JMeter Test') {
             steps {
                 dir('CICDSCRIPTS') {
-                    bat 'jmeter -n -t Maple.jmx -l results.jtl -e -o results'
+                    sh '/opt/apache-jmeter-5.6.3/bin/jmeter -n -t script.jmx -l result.jtl'
+
                 }
             }
         }
